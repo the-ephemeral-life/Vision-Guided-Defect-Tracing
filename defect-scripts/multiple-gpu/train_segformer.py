@@ -73,7 +73,8 @@ class DefectDataset(Dataset):
     def __getitem__(self, i):
         ip = self.imgs[i]
         img = cv2.cvtColor(cv2.imread(str(ip)), cv2.COLOR_BGR2RGB)
-        mp = next(self.mask_dir.glob(ip.stem + ".*"))
+        # Optimized lookup for Kaggle limits
+        mp = self.mask_dir / f"{ip.stem}.png"
         mask = (cv2.imread(str(mp), cv2.IMREAD_GRAYSCALE) > 127).astype(np.uint8)
         out = self.tf(image=img, mask=mask)
         return out["image"], out["mask"].float()
